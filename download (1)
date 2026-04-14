@@ -1,0 +1,31 @@
+package calc;
+
+import javax.swing.JFrame;
+
+public class Main {
+    public static void main(String[] args) {
+        JFrame ventana = new JFrame("Calculadora");
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        /*
+         * Indica que cuando cierres la ventana:el programa se cierra completamente
+         * si no se pone esto, el programa seguiría ejecutándose en segundo plano.
+         * */
+        ventana.setSize(360, 300);
+        //Tamaño de la pantalla 
+        
+        ventana.setLocationRelativeTo(null);
+        //Coloca la ventana centrada en la pantalla
+        
+        ventana.setContentPane(new Prueba2());
+        /*
+         * Se crea un objeto de tu clase Prueba2
+         * Prueba2 es un JPanel
+         * Ese panel contiene botones, pantalla y lógica
+         * Se mete dentro de la ventana
+         * */
+
+        ventana.setVisible(true);
+        
+    //    Hace la ventana visible si no esta a true no se ve por pantalla
+    }
+}

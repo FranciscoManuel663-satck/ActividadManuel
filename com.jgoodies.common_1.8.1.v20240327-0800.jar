@@ -1,0 +1,234 @@
+package calc;
+
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+
+/**
+ * Panel de calculadora MUY BÁSICA:
+ * - Permite escribir números con los botones 0-9
+ * - Permite elegir una operación (+ - * /)
+ * - Calcula al pulsar "=" usando el valor acumulado
+ * - Limpia todo con "C"
+ *
+ * NOTA: Esta calculadora no tiene decimales ni prioridad de operaciones.
+ * Se comporta como: 2 + 3 + 4 = 9 (va acumulando).
+ */
+public class Prueba2 extends JPanel {
+
+    private static final long serialVersionUID = 1L;
+
+    // 1) "Memoria" de la calculadora: aquí guardamos el resultado acumulado
+    private int acumulado = 0;
+
+    // 2) Operador actual seleccionado (+ - * /). Vacío significa "no hay operación aún"
+    private String operador = "";
+
+    // 3) Bandera para saber si el siguiente número debe empezar desde cero (limpiar pantalla)
+    private boolean nuevaEntrada = true;
+
+    // 4) Pantalla de la calculadora (donde se ven los números)
+    private JTextField textField;
+
+    /**
+     * Constructor: crea la interfaz (botones + pantalla) y conecta listeners.
+     */
+    public Prueba2() {
+        // Usamos layout null para poder colocar componentes con setBounds (Absolute Layout)
+        setLayout(null);
+
+        // ---- PASO A: Crear pantalla ANTES de usarla ----
+        textField = new JTextField();
+        textField.setBounds(36, 34, 265, 18);
+        add(textField);
+        textField.setColumns(10);
+
+        // ---- PASO B: Crear botones numéricos ----
+        JButton btn1 = new JButton("1");
+        btn1.setBounds(36, 62, 84, 20);
+        add(btn1);
+
+        JButton btn2 = new JButton("2");
+        btn2.setBounds(128, 62, 84, 20);
+        add(btn2);
+
+        JButton btn3 = new JButton("3");
+        btn3.setBounds(217, 62, 84, 20);
+        add(btn3);
+
+        JButton btn4 = new JButton("4");
+        btn4.setBounds(36, 92, 84, 20);
+        add(btn4);
+
+        JButton btn5 = new JButton("5");
+        btn5.setBounds(128, 92, 84, 20);
+        add(btn5);
+
+        JButton btn6 = new JButton("6");
+        btn6.setBounds(217, 92, 84, 20);
+        add(btn6);
+
+        JButton btn7 = new JButton("7");
+        btn7.setBounds(36, 122, 84, 20);
+        add(btn7);
+
+        JButton btn8 = new JButton("8");
+        btn8.setBounds(128, 122, 84, 20);
+        add(btn8);
+
+        JButton btn9 = new JButton("9");
+        btn9.setBounds(217, 122, 84, 20);
+        add(btn9);
+
+        JButton btn0 = new JButton("0");
+        btn0.setBounds(36, 148, 265, 20);
+        add(btn0);
+
+        // ---- PASO C: Crear botones de operaciones ----
+        JButton btnMas = new JButton("+");
+        btnMas.setBounds(36, 178, 84, 20);
+        add(btnMas);
+
+        JButton btnMenos = new JButton("-");
+        btnMenos.setBounds(128, 178, 84, 20);
+        add(btnMenos);
+
+        JButton btnPor = new JButton("*");
+        btnPor.setBounds(217, 178, 84, 20);
+        add(btnPor);
+
+        JButton btnDiv = new JButton("/");
+        btnDiv.setBounds(36, 205, 84, 20);
+        add(btnDiv);
+
+        JButton btnIgual = new JButton("=");
+        btnIgual.setBounds(128, 205, 84, 20);
+        add(btnIgual);
+
+        JButton btnClear = new JButton("C");
+        btnClear.setBounds(217, 205, 84, 20);
+        add(btnClear);
+
+        // ---- PASO D: Conectar botones numéricos a pulsarNumero() ----
+        btn1.addActionListener(e -> pulsarNumero("1"));
+        btn2.addActionListener(e -> pulsarNumero("2"));
+        btn3.addActionListener(e -> pulsarNumero("3"));
+        btn4.addActionListener(e -> pulsarNumero("4"));
+        btn5.addActionListener(e -> pulsarNumero("5"));
+        btn6.addActionListener(e -> pulsarNumero("6"));
+        btn7.addActionListener(e -> pulsarNumero("7"));
+        btn8.addActionListener(e -> pulsarNumero("8"));
+        btn9.addActionListener(e -> pulsarNumero("9"));
+        btn0.addActionListener(e -> pulsarNumero("0"));
+
+        // ---- PASO E: Conectar operaciones a pulsarOperador() ----
+        btnMas.addActionListener(e -> pulsarOperador("+"));
+        btnMenos.addActionListener(e -> pulsarOperador("-"));
+        btnPor.addActionListener(e -> pulsarOperador("*"));
+        btnDiv.addActionListener(e -> pulsarOperador("/"));
+
+        // ---- PASO F: Conectar "=" y "C" ----
+        btnIgual.addActionListener(e -> pulsarIgual());
+        btnClear.addActionListener(e -> limpiar());
+    }
+
+    /**
+     * Se ejecuta al pulsar un número.
+     * - Si nuevaEntrada = true, se limpia la pantalla para empezar un número nuevo.
+     * - Luego se concatena el dígito.
+     */
+    private void pulsarNumero(String n) {
+        if (nuevaEntrada) {
+            textField.setText("");
+            nuevaEntrada = false;
+        }
+        textField.setText(textField.getText() + n);
+    }
+
+    /**
+     * Se ejecuta al pulsar + - * /
+     * - Lee el número que hay en pantalla (valor)
+     * - Si no hay operador previo: guarda valor en acumulado
+     * - Si ya hay operador: aplica la operación anterior para ir acumulando
+     * - Guarda el nuevo operador y marca nuevaEntrada para escribir el siguiente número
+     */
+    private void pulsarOperador(String op) {
+        if (textField.getText().isEmpty()) return;
+
+        // ✅ Convertir texto a entero correctamente (NO usar Integer.getInteger)
+        int valor = Integer.parseInt(textField.getText());
+
+        if (operador.equals("")) {
+            // Primer operador: aún no se ha operado nada, guardamos el primer número
+            acumulado = valor;
+        } else {
+            // Ya hay operación previa: acumulamos
+            acumulado = aplicarOperacion(acumulado, valor, operador);
+        }
+
+        // Guardamos el operador nuevo
+        operador = op;
+
+        // El siguiente número debe empezar limpio
+        nuevaEntrada = true;
+    }
+
+    /**
+     * Se ejecuta al pulsar "="
+     * - Aplica la operación pendiente con el número en pantalla
+     * - Muestra el resultado en la pantalla
+     * - Limpia el operador (para que la próxima operación empiece bien)
+     */
+    private void pulsarIgual() {
+        if (textField.getText().isEmpty()) return;
+
+        int valor = Integer.parseInt(textField.getText());
+
+        if (!operador.equals("")) {
+            acumulado = aplicarOperacion(acumulado, valor, operador);
+        } else {
+            // Si no hay operador, el acumulado pasa a ser el valor escrito
+            acumulado = valor;
+        }
+
+        textField.setText(String.valueOf(acumulado));
+        operador = "";
+        nuevaEntrada = true;
+    }
+
+    /**
+     * Aplica una operación entre a y b según op.
+     * Incluye control simple para división entre 0.
+     */
+    private int aplicarOperacion(int a, int b, String op) {
+        switch (op) {
+            case "+": return a + b;
+            case "-": return a - b;
+            case "*": return a * b;
+            case "/":
+                if (b == 0) {
+                    textField.setText("Error");
+                    // Reiniciamos estado para evitar seguir calculando mal
+                    operador = "";
+                    nuevaEntrada = true;
+                    return 0;
+                }
+                return a / b;
+            default:
+                return b;
+        }
+    }
+
+    /**
+     * Limpia toda la calculadora (C):
+     * - Resetea acumulado y operador
+     * - Limpia pantalla
+     * - Marca nuevaEntrada para empezar un número nuevo
+     */
+    private void limpiar() {
+        acumulado = 0;
+        operador = "";
+        textField.setText("");
+        nuevaEntrada = true;
+    }
+}
